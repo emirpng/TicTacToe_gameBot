@@ -2,6 +2,12 @@ from bot import bot
 
 
 class TicTacToe_gameBot(object):
+    """
+    Bot sends "greeting" message on "/start" command 
+    and replies "TicTacToe_gameBot 🔥" on any text
+    message from User
+    """
+
     def __init__(self):
         self.run_handlers()
 
@@ -23,6 +29,9 @@ class TicTacToe_gameBot(object):
             )
 
     def print_user_message_text(self, message):
+        """
+        aaaaa
+        """
         if (username := message.from_user.username):
             print(f"@{username} > {message.text}")
         else:

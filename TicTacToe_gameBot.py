@@ -1,41 +1,26 @@
+from models.user import get_user
+from bot_states import BotStates
 from bot import bot
+from config import DEV_USER_ID
 
-
-class TicTacToe_gameBot(object):
-    """
-    Bot sends "greeting" message on "/start" command 
-    and replies "TicTacToe_gameBot 🔥" on any text
-    message from User
-    """
-
+class TelegramBot(object):
     def __init__(self):
-        self.run_handlers()
+        self.bot_states = BotStates()
+        self.init_telegram_handlers()
 
-    def run_handlers(self):
+    def init_telegram_handlers(self):
         @bot.message_handler(commands=['start'])
         def start(message):
-            self.print_user_message_text(message)
-            bot.send_message(
-                chat_id=message.chat.id,
-                text='Welcome to TicTacToe_gameBot!'
-            )
+            if message.chat.id == DEV_USER_ID:
+                # Bot can be started only by developer(me)
+                self.bot_states.handle_command_start(message)
 
-        @bot.message_handler(content_types=['text'])   
-        def reply_to_user_message(message):
-            self.print_user_message_text(message)
-            bot.reply_to(
-                message=message,
-                text='TicTacToe_gameBot 🔥'
-            )
+        @bot.callback_query_handler(func=lambda call: True)
+        def handle_callback(call):
+            user = get_user(call.from_user.id)
 
-    def print_user_message_text(self, message):
-        """
-        aaaaa
-        """
-        if (username := message.from_user.username):
-            print(f"@{username} > {message.text}")
-        else:
-            print(f"User '{message.from_user.id}' > {message.text}")
+            if call.message.message_id == user.bot_menu_id:
+                self.bot_states.handle_callback(call)
 
     def run(self):
         bot.remove_webhook()
@@ -43,8 +28,5 @@ class TicTacToe_gameBot(object):
 
 
 if __name__ == '__main__':
-    try:
-        telegram_bot = TicTacToe_gameBot()
-        telegram_bot.run()
-    except Exception as e:
-        print(e)
+    TicTacToe_gameBot = TelegramBot()
+    TicTacToe_gameBot.run()

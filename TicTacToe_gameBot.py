@@ -1,7 +1,7 @@
 from models.user import get_user
 from bot_states import BotStates
 from bot import bot
-from config import DEV_USER_ID
+from config import DEV_USER_ID, BOT_TOKEN
 
 class TelegramBot(object):
     def __init__(self):
